@@ -1,14 +1,23 @@
-const request = require('request')
-const cheerio = require('cheerio')
-const { JSDOM } = require('jsdom')
+import request from 'request'
+import cheerio from 'cheerio'
+import { JSDOM } from 'jsdom'
 
-const { scrapingPaths, convertToNumber } = require('../utils')
+import { scrapingPaths, convertToNumber } from '../utils'
 
-class itemsController {
-  index (req, res) {
+class PackageController {
+  static index (req, res) {
     const npmPackage = {
       name: req.params.packageName,
-      url: `https://npmjs.com/package/${req.params.packageName}`
+      url: `https://npmjs.com/package/${req.params.packageName}`,
+      versions: 0,
+      dependencies: 0,
+      dependents: 0,
+      lastVersion: '',
+      license: null,
+      weeklyDownloads: 0,
+      unpackedSize: null,
+      totalFiles: 0,
+      lastPublish: ''
     }
 
     const scraping = (err, resp, body) => {
@@ -49,4 +58,4 @@ class itemsController {
   }
 }
 
-module.exports = itemsController
+export default PackageController
