@@ -7,7 +7,8 @@
     "commit": "npx git-cz",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpileOnly --ignore-watch node_modules src/server.ts",
     "format": "npx standard --fix",
-    "build": "babel src --extensions \".ts\" --out-dir dist --copy-files"
+    "build": "babel src --extensions \".ts\" --out-dir dist --copy-files",
+    "prod": "npm run build && node dist/server.js"
   },
   "keywords": [],
   "author": "Mikael Rolim de Aquino <mikarg9@gmail.com>",
