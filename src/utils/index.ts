@@ -14,7 +14,5 @@ const convertToNumber = str => (
   Number(str.split('').filter(character => !isNaN(character)).join(''))
 )
 
-module.exports = {
-  scrapingPaths: JSPaths,
-  convertToNumber
-}
+export const scrapingPaths = JSPaths
+export { convertToNumber }
