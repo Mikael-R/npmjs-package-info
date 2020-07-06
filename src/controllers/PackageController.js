@@ -4,7 +4,7 @@ const { JSDOM } = require('jsdom')
 
 const { scrapingPaths, convertToNumber } = require('../utils')
 
-class itemsController {
+class PackageController {
   index (req, res) {
     const npmPackage = {
       name: req.params.packageName,
@@ -38,7 +38,7 @@ class itemsController {
 
       npmPackage.unpackedSize = document.querySelector(scrapingPaths.unpackedSize).innerHTML.split('').length < 10 ? document.querySelector(scrapingPaths.unpackedSize).innerHTML : null
 
-      npmPackage.totalFiles = convertToNumber(document.querySelector(scrapingPaths.totalFiles).innerHTML)
+      npmPackage.totalFiles = document.querySelector(scrapingPaths.unpackedSize).innerHTML.split('').length < 10 ? convertToNumber(document.querySelector(scrapingPaths.unpackedSize).innerHTML) : null
 
       npmPackage.lastPublish = document.querySelector(scrapingPaths.lastPublish).innerHTML
 
@@ -49,4 +49,4 @@ class itemsController {
   }
 }
 
-module.exports = itemsController
+module.exports = PackageController
