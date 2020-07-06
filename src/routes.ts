@@ -1,6 +1,6 @@
 import express from 'express'
 
-import PackageController from './controllers/PackageController'
+import PackageController from '@controllers/PackageController'
 
 const routes = express.Router()
 

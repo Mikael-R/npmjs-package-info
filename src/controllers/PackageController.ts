@@ -2,7 +2,8 @@ import request from 'request'
 import cheerio from 'cheerio'
 import { JSDOM } from 'jsdom'
 
-import { scrapingPaths, convertToNumber } from '../utils'
+import { scrapingPaths, convertToNumber } from '@utils/.'
+
 
 class PackageController {
   static index (req, res) {
