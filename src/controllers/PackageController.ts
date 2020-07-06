@@ -1,4 +1,3 @@
-import { Request, Response} from 'request'
 import request from 'request'
 import cheerio from 'cheerio'
 import { JSDOM } from 'jsdom'
