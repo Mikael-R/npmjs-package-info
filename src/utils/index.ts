@@ -10,8 +10,8 @@ const JSPaths = {
   lastPublish: '#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div._702d723c.dib.w-50.bb.b--black-10.pr2.w-100 > p > time'
 }
 
-const convertToNumber = str => (
-  Number(str.split('').filter(character => !isNaN(character)).join(''))
+const convertToNumber = (str: string) => (
+  Number(str.split('').filter((character: any) => !isNaN(character)).join(''))
 )
 
 export const scrapingPaths = JSPaths

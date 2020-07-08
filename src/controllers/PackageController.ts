@@ -1,3 +1,4 @@
+import { Request, Response } from 'express'
 import request from 'request'
 import cheerio from 'cheerio'
 import { JSDOM } from 'jsdom'
@@ -6,7 +7,7 @@ import { scrapingPaths, convertToNumber } from '@utils/.'
 
 
 class PackageController {
-  static index (req, res) {
+  static index (req: Request, res: Response) {
     const npmPackage = {
       name: req.params.packageName,
       url: `https://npmjs.com/package/${req.params.packageName}`,
