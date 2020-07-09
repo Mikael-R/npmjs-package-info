@@ -1,10 +1,10 @@
+// eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 import request from 'request'
 import cheerio from 'cheerio'
 import { JSDOM } from 'jsdom'
 
-import { scrapingPaths, convertToNumber } from '@utils/.'
-
+import { scrapingPathsJS, convertToNumber, htmlToJson } from '@utils/.'
 
 class PackageController {
   static index (req: Request, res: Response) {
@@ -19,14 +19,15 @@ class PackageController {
       weeklyDownloads: 0,
       unpackedSize: null,
       totalFiles: 0,
-      lastPublish: ''
+      lastPublish: '',
+      keywords: []
     }
 
     const scraping = (err, resp, body) => {
-      if (err) return res.send({ error: err })
+      if (err) return res.json({ error: err })
 
       if (resp.statusCode !== 200) {
-        return res.send({ error: 'Package not found' })
+        return res.json({ error: 'Package not found' })
       }
 
       const webSiteHTML = cheerio.load(body).html()
@@ -35,25 +36,27 @@ class PackageController {
         window: { document }
       } = new JSDOM(webSiteHTML)
 
-      npmPackage.versions = convertToNumber(document.querySelector(scrapingPaths.versions).innerHTML)
+      npmPackage.versions = convertToNumber(document.querySelector(scrapingPathsJS.versions).innerHTML)
 
-      npmPackage.dependencies = convertToNumber(document.querySelector(scrapingPaths.dependencies).innerHTML)
+      npmPackage.dependencies = convertToNumber(document.querySelector(scrapingPathsJS.dependencies).innerHTML)
 
-      npmPackage.dependents = convertToNumber(document.querySelector(scrapingPaths.dependents).innerHTML)
+      npmPackage.dependents = convertToNumber(document.querySelector(scrapingPathsJS.dependents).innerHTML)
 
-      npmPackage.lastVersion = document.querySelector(scrapingPaths.lastVersion).innerHTML
+      npmPackage.lastVersion = document.querySelector(scrapingPathsJS.lastVersion).innerHTML
 
-      npmPackage.license = document.querySelector(scrapingPaths.license).innerHTML
+      npmPackage.license = document.querySelector(scrapingPathsJS.license).innerHTML
 
-      npmPackage.weeklyDownloads = convertToNumber(document.querySelector(scrapingPaths.weeklyDownloads).innerHTML)
+      npmPackage.weeklyDownloads = convertToNumber(document.querySelector(scrapingPathsJS.weeklyDownloads).innerHTML)
 
-      npmPackage.unpackedSize = document.querySelector(scrapingPaths.unpackedSize).innerHTML.split('').length < 10 ? document.querySelector(scrapingPaths.unpackedSize).innerHTML : null
+      npmPackage.unpackedSize = document.querySelector(scrapingPathsJS.unpackedSize).innerHTML.split('').length < 10 ? document.querySelector(scrapingPathsJS.unpackedSize).innerHTML : null
 
-      npmPackage.totalFiles = document.querySelector(scrapingPaths.unpackedSize).innerHTML.split('').length < 10 ? convertToNumber(document.querySelector(scrapingPaths.unpackedSize).innerHTML) : null
+      npmPackage.totalFiles = document.querySelector(scrapingPathsJS.unpackedSize).innerHTML.split('').length < 10 ? convertToNumber(document.querySelector(scrapingPathsJS.unpackedSize).innerHTML) : null
 
-      npmPackage.lastPublish = document.querySelector(scrapingPaths.lastPublish).innerHTML
+      npmPackage.lastPublish = document.querySelector(scrapingPathsJS.lastPublish).innerHTML
 
-      return res.send(npmPackage)
+      htmlToJson(document.querySelector(scrapingPathsJS.keywords) ? document.querySelector(scrapingPathsJS.keywords).innerHTML : '').map(value => value.children.map(value => value.children.map(value => npmPackage.keywords.push(value.content))))
+
+      return res.json(npmPackage)
     }
 
     request(npmPackage.url, scraping)
