@@ -1,4 +1,4 @@
-interface npmPackage {
+export interface npmPackage {
   name: string,
   url: string,
   versions: number | undefined | null,

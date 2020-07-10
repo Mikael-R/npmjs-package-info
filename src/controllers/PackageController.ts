@@ -4,7 +4,8 @@ import request from 'request'
 import cheerio from 'cheerio'
 import { JSDOM } from 'jsdom'
 
-import '@controllers/types'
+// eslint-disable-next-line no-unused-vars
+import { npmPackage } from '@controllers/types'
 
 import { convertToNumber, htmlToJson, toTitleCase } from '@utils/.'
 
