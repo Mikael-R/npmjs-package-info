@@ -4,23 +4,53 @@ import request from 'request'
 import cheerio from 'cheerio'
 import { JSDOM } from 'jsdom'
 
-import { scrapingPathsJS, convertToNumber, htmlToJson } from '@utils/.'
+import '@controllers/types'
+
+import { convertToNumber, htmlToJson, toTitleCase } from '@utils/.'
 
 class PackageController {
   static index (req: Request, res: Response) {
-    const npmPackage = {
+    const npmPackage: npmPackage = {
       name: req.params.packageName,
       url: `https://npmjs.com/package/${req.params.packageName}`,
       versions: 0,
       dependencies: 0,
       dependents: 0,
       lastVersion: '',
-      license: null,
+      license: '',
       weeklyDownloads: 0,
-      unpackedSize: null,
+      unpackedSize: '',
       totalFiles: 0,
       lastPublish: '',
       keywords: []
+    }
+
+    const totalFiles = (document): string | undefined | null => {
+      if (document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(3) > a') !== null) {
+        return document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(8) > p')?.innerHTML
+      } else if (document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(7) > p')?.innerHTML.match(/[A-z]+/g)) {
+        return null
+      } else {
+        return document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(7) > p')?.innerHTML
+      }
+    }
+
+    const weeklyDownloads = (document): string | undefined | null => {
+      if (document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(3) > a') !== null) {
+        return document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(4) > div > div > p')?.innerHTML
+      } else {
+        return document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(3) > div > div > p')?.innerHTML
+      }
+    }
+
+    const unpackageSize = (document): string | undefined | null => {
+      if (document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(3) > a') !== null) {
+        return document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(7) > p')?.innerHTML
+      } else if (document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(6) > p')?.innerHTML.length < 10) {
+        return document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(6) > p').innerHTML
+      } else {
+        return null
+      }
     }
 
     const scraping = (err, resp, body) => {
@@ -36,25 +66,25 @@ class PackageController {
         window: { document }
       } = new JSDOM(webSiteHTML)
 
-      npmPackage.versions = convertToNumber(document.querySelector(scrapingPathsJS.versions).innerHTML)
+      npmPackage.versions = convertToNumber(document.querySelector('#top > ul > li._8055e658.f5.fw5.tc.pointer.b4fcfd19 > a > span > span')?.innerHTML)
 
-      npmPackage.dependencies = convertToNumber(document.querySelector(scrapingPathsJS.dependencies).innerHTML)
+      npmPackage.dependencies = convertToNumber(document.querySelector('#top > ul > li._8055e658.f5.fw5.tc.pointer.c1f85151 > a > span > span')?.innerHTML)
 
-      npmPackage.dependents = convertToNumber(document.querySelector(scrapingPathsJS.dependents).innerHTML)
+      npmPackage.dependents = convertToNumber(document.querySelector('#top > ul > li._8055e658.f5.fw5.tc.pointer._7cec0316 > a > span > span')?.innerHTML)
 
-      npmPackage.lastVersion = document.querySelector(scrapingPathsJS.lastVersion).innerHTML
+      npmPackage.lastVersion = document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(4) > p')?.innerHTML
 
-      npmPackage.license = document.querySelector(scrapingPathsJS.license).innerHTML
+      npmPackage.license = document.querySelector('#top > div.fdbf4038.w-third-l.mt3.w-100.ph3.ph4-m.pv3.pv0-l.order-1-ns.order-0 > div:nth-child(5) > p')?.innerHTML
 
-      npmPackage.weeklyDownloads = convertToNumber(document.querySelector(scrapingPathsJS.weeklyDownloads).innerHTML)
+      npmPackage.totalFiles = convertToNumber(totalFiles(document))
 
-      npmPackage.unpackedSize = document.querySelector(scrapingPathsJS.unpackedSize).innerHTML.split('').length < 10 ? document.querySelector(scrapingPathsJS.unpackedSize).innerHTML : null
+      npmPackage.weeklyDownloads = convertToNumber(weeklyDownloads(document))
 
-      npmPackage.totalFiles = document.querySelector(scrapingPathsJS.unpackedSize).innerHTML.split('').length < 10 ? convertToNumber(document.querySelector(scrapingPathsJS.unpackedSize).innerHTML) : null
+      npmPackage.unpackedSize = unpackageSize(document)
 
-      npmPackage.lastPublish = document.querySelector(scrapingPathsJS.lastPublish).innerHTML
+      npmPackage.lastPublish = document.querySelector('#top > div.w-100.ph0-l.ph3.ph4-m > span:nth-child(4) > time')?.innerHTML
 
-      htmlToJson(document.querySelector(scrapingPathsJS.keywords) ? document.querySelector(scrapingPathsJS.keywords).innerHTML : '').map(value => value.children.map(value => value.children.map(value => npmPackage.keywords.push(value.content))))
+      htmlToJson(document.querySelector('#top > div._6620a4fd.mw8-l.mw-100.w-100.w-two-thirds-l.ph3-m.pt2.pl0-ns.pl2.order-1-m.order-0-ns.order-1.order-2-m > section > div.pv4 > ul')?.innerHTML || '').map(value => value.children.map(value => value.children.map(value => npmPackage.keywords.push(toTitleCase(value.content)))))
 
       return res.json(npmPackage)
     }
