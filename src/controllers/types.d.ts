@@ -9,6 +9,7 @@ export interface npmPackage {
   weeklyDownloads: number | undefined | null,
   unpackedSize: string | undefined | null,
   totalFiles: number | undefined | null,
-  lastPublish: string | undefined | null
+  lastPublish: string | undefined | null,
+  collaborators: Array<string>,
   keywords: Array<string>
 }
