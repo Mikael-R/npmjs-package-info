@@ -1,8 +1,7 @@
 node_modules/
+.vscode/
+build/
 
-package-*.json
-package.json.*
-yarn.lock
-yarn-*.log
-
-dist
+*-lock.json
+*.lock
+.log

@@ -1,14 +1,12 @@
-// eslint-disable-next-line no-unused-vars
 import { Request, Response } from 'express'
 import request from 'request'
 import cheerio from 'cheerio'
 import { JSDOM } from 'jsdom'
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { npmPackage } from '@controllers/types'
 
-import { convertToNumber, htmlToJson, toTitleCase } from '@utils/.'
-import { BaseEncodingOptions } from 'fs'
+import { convertToNumber, htmlToJson } from '@utils/index'
 
 class PackageController {
   static index (req: Request, res: Response) {
@@ -97,7 +95,7 @@ class PackageController {
 
       npmPackage.lastPublish = document.querySelector('#top > div.w-100.ph0-l.ph3.ph4-m > span:nth-child(4) > time')?.innerHTML || null
 
-      htmlToJson(document.querySelector('#top > div._6620a4fd.mw8-l.mw-100.w-100.w-two-thirds-l.ph3-m.pt2.pl0-ns.pl2.order-1-m.order-0-ns.order-1.order-2-m > section > div.pv4 > ul')?.innerHTML || '').map(value => value.children.map(value => value.children.map(value => npmPackage.keywords.push(toTitleCase(value.content)))))
+      htmlToJson(document.querySelector('#top > div._6620a4fd.mw8-l.mw-100.w-100.w-two-thirds-l.ph3-m.pt2.pl0-ns.pl2.order-1-m.order-0-ns.order-1.order-2-m > section > div.pv4 > ul')?.innerHTML || '').map(value => value.children.map(value => value.children.map(value => npmPackage.keywords.push(value.content))))
 
       return res.json(npmPackage)
     }

@@ -10,6 +10,6 @@ export interface npmPackage {
   unpackedSize: string | undefined | null,
   totalFiles: number | undefined | null,
   lastPublish: string | undefined | null,
-  collaborators: Array<string>,
-  keywords: Array<string>
+  collaborators: string[],
+  keywords: string[]
 }
